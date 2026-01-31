@@ -27,4 +27,10 @@ ConvertFrom-StringData @'
     ## Test-TlsNegotiation
     Test_TlsNegotiation_TryingProtocol = Attempting TLS negotiation using protocol: {0}. (TTN0001)
     Test_TlsNegotiation_ConnectTimeout = Connect timed out after {0} seconds. (TTN0002)
+
+    ## Reset-TlsProtocol
+    Reset_TlsProtocol_ShouldProcessDescription = Reset TLS protocol: {0} ({1}). (RTP0002)
+    Reset_TlsProtocol_ShouldProcessConfirmation = Reset TLS protocol {0}? (RTP0003)
+    Reset_TlsProtocol_ShouldProcessCaption = Reset TLS Protocol (RTP0004)
+    Reset_TlsProtocol_FailedToReset = Failed to reset protocol '{0}'. (RTP0001)
 '@

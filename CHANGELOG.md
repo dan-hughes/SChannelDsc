@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Disable-TlsProtocol
   - Enable-TlsProtocol
   - Get-TlsProtocol
+  - Reset-TlsProtocol ([issue #69](https://github.com/dsccommunity/SChannelDsc/issues/69))
   - Test-TlsNegotiation
   - Test-TlsProtocol
 

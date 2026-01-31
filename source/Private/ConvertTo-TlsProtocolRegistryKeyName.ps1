@@ -56,7 +56,8 @@ function ConvertTo-TlsProtocolRegistryKeyName
             'TLS 1.2'
         }
 
-        ([System.Security.Authentication.SslProtocols]::Tls13)
+        # A guard to check if Tls13 is defined in the enum (it may not be in older .NET versions)
+        { [System.Enum]::GetNames([System.Security.Authentication.SslProtocols]) -contains 'Tls13' -and $_ -eq [System.Security.Authentication.SslProtocols]::Tls13 }
         {
             'TLS 1.3'
         }
