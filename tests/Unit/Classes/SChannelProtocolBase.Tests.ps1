@@ -1,0 +1,361 @@
+<#
+    .SYNOPSIS
+        Unit test for SChannelProtocolBase DSC resource.
+#>
+
+# Suppressing this rule because Script Analyzer does not understand Pester's syntax.
+[System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
+param ()
+
+BeforeDiscovery {
+    try
+    {
+        if (-not (Get-Module -Name 'DscResource.Test'))
+        {
+            # Assumes dependencies has been resolved, so if this module is not available, run 'noop' task.
+            if (-not (Get-Module -Name 'DscResource.Test' -ListAvailable))
+            {
+                # Redirect all streams to $null, except the error stream (stream 2)
+                & "$PSScriptRoot/../../../build.ps1" -Tasks 'noop' 3>&1 4>&1 5>&1 6>&1 > $null
+            }
+
+            # If the dependencies has not been resolved, this will throw an error.
+            Import-Module -Name 'DscResource.Test' -Force -ErrorAction 'Stop'
+        }
+    }
+    catch [System.IO.FileNotFoundException]
+    {
+        throw 'DscResource.Test module dependency not found. Please run ".\build.ps1 -ResolveDependency -Tasks build" first.'
+    }
+}
+
+BeforeAll {
+    $script:dscModuleName = 'SChannelDsc'
+
+    Import-Module -Name $script:dscModuleName
+
+    $PSDefaultParameterValues['InModuleScope:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Mock:ModuleName'] = $script:dscModuleName
+    $PSDefaultParameterValues['Should:ModuleName'] = $script:dscModuleName
+}
+
+AfterAll {
+    $PSDefaultParameterValues.Remove('InModuleScope:ModuleName')
+    $PSDefaultParameterValues.Remove('Mock:ModuleName')
+    $PSDefaultParameterValues.Remove('Should:ModuleName')
+
+    # Unload the module being tested so that it doesn't impact any other tests.
+    Get-Module -Name $script:dscModuleName -All | Remove-Module -Force
+}
+
+Describe 'SChannelProtocolBase' {
+    Context 'When class is instantiated' {
+        It 'Should not throw an exception' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                { [SChannelProtocolBase]::new() } | Should -Not -Throw
+            }
+        }
+
+        It 'Should have a default or empty constructor' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $instance = [SChannelProtocolBase]::new()
+                $instance | Should -Not -BeNullOrEmpty
+            }
+        }
+
+        It 'Should be the correct type' {
+            InModuleScope -ScriptBlock {
+                Set-StrictMode -Version 1.0
+
+                $instance = [SChannelProtocolBase]::new()
+                $instance.GetType().Name | Should -Be 'SChannelProtocolBase'
+            }
+        }
+    }
+}
+
+Describe 'SChannelProtocolBase\GetCurrentState()' -Tag 'HiddenMember' {
+    Context 'When $ClientSide is $false' {
+        Context 'When object is present in the current state' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance = [SChannelProtocolBase] @{
+                        IsSingleInstance   = 'Yes'
+                        ProtocolsEnabled   = @(
+                            [SChannelSslProtocols]::DTls12
+                            [SChannelSslProtocols]::Tls12
+                            [SChannelSslProtocols]::Tls13
+                        )
+                        ProtocolsDisabled  = @(
+                            [SChannelSslProtocols]::Ssl2
+                            [SChannelSslProtocols]::Ssl3
+                            [SChannelSslProtocols]::Dtls1
+                            [SChannelSslProtocols]::Tls
+                        )
+                        ProtocolsDefault   = @(
+                            [SChannelSslProtocols]::Tls11
+                        )
+                        RebootWhenRequired = $true
+                    }
+
+                    Mock -CommandName Get-TlsProtocol -MockWith {
+                        @(
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Ssl2
+                                Enabled  = 0
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Ssl3
+                                Enabled  = 0
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Dtls1
+                                Enabled  = 0
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Dtls12
+                                Enabled  = 1
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Tls
+                                Enabled  = 0
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Tls11
+                                Enabled  = $null
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Tls12
+                                Enabled  = 1
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Tls13
+                                Enabled  = 1
+                            }
+                        )
+                    } -ParameterFilter { $Client -eq $false }
+                }
+            }
+
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockInstance.GetCurrentState(
+                        @{
+                            IsSingleInstance = 'Yes'
+                        }
+                    )
+
+                    $currentState.ProtocolsEnabled | Should -HaveCount 3
+                    $currentState.ProtocolsDisabled | Should -HaveCount 4
+                    $currentState.ProtocolsDefault | Should -HaveCount 1
+                }
+
+                Should -Invoke -CommandName Get-TlsProtocol -ParameterFilter {
+                    $Client -eq $false
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+
+    Context 'When $Client is $true' {
+        Context 'When object is present in the current state' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance = [SChannelProtocolBase] @{
+                        IsSingleInstance   = 'Yes'
+                        ProtocolsEnabled   = @(
+                            [SChannelSslProtocols]::DTls12
+                            [SChannelSslProtocols]::Tls12
+                            [SChannelSslProtocols]::Tls13
+                        )
+                        ProtocolsDisabled  = @(
+                            [SChannelSslProtocols]::Ssl2
+                            [SChannelSslProtocols]::Ssl3
+                            [SChannelSslProtocols]::Dtls1
+                            [SChannelSslProtocols]::Tls
+                        )
+                        ProtocolsDefault   = @(
+                            [SChannelSslProtocols]::Tls11
+                        )
+                        RebootWhenRequired = $true
+                    }
+
+                    $script:mockInstance.ClientSide = $true
+
+                    Mock -CommandName Get-TlsProtocol -MockWith {
+                        @(
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Ssl2
+                                Enabled  = 0
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Ssl3
+                                Enabled  = 0
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Dtls1
+                                Enabled  = 0
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Dtls12
+                                Enabled  = 1
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Tls
+                                Enabled  = 0
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Tls11
+                                Enabled  = $null
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Tls12
+                                Enabled  = 1
+                            }
+                            [PSCustomObject] @{
+                                Protocol = [SChannelSslProtocols]::Tls13
+                                Enabled  = 1
+                            }
+                        )
+                    } -ParameterFilter { $Client -eq $true }
+                }
+            }
+
+            It 'Should return the correct values' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $currentState = $script:mockInstance.GetCurrentState(
+                        @{
+                            IsSingleInstance = 'Yes'
+                        }
+                    )
+
+                    $currentState.ProtocolsEnabled | Should -HaveCount 3
+                    $currentState.ProtocolsDisabled | Should -HaveCount 4
+                    $currentState.ProtocolsDefault | Should -HaveCount 1
+                }
+
+                Should -Invoke -CommandName Get-TlsProtocol -ParameterFilter {
+                    $Client -eq $true
+                } -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
+
+Describe 'SChannelProtocolBase\Modify()' -Tag 'HiddenMember' {
+    Context 'When $ClientSide is $false' {
+        Context 'When modifying protocols' {
+            BeforeAll {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $script:mockInstance = [SChannelProtocolBase] @{
+                        IsSingleInstance   = 'Yes'
+                        ProtocolsEnabled   = @(
+                            [SChannelSslProtocols]::DTls12
+                            [SChannelSslProtocols]::Tls12
+                            [SChannelSslProtocols]::Tls13
+                        )
+                        ProtocolsDisabled  = @(
+                            [SChannelSslProtocols]::Ssl2
+                            [SChannelSslProtocols]::Ssl3
+                            [SChannelSslProtocols]::Dtls1
+                            [SChannelSslProtocols]::Tls
+                        )
+                        ProtocolsDefault   = @(
+                            [SChannelSslProtocols]::Tls11
+                        )
+                        RebootWhenRequired = $true
+                    }
+
+                    Mock -CommandName Enable-TlsProtocol -ParameterFilter { $Client -eq $false }
+                    Mock -CommandName Disable-TlsProtocol -ParameterFilter { $Client -eq $false }
+                    Mock -CommandName Reset-TlsProtocol -ParameterFilter { $Client -eq $false }
+                    Mock -CommandName Set-DscMachineRebootRequired
+                }
+            }
+
+            It 'Should call the correct mocks' {
+                InModuleScope -ScriptBlock {
+                    Set-StrictMode -Version 1.0
+
+                    $propertiesToModify = @{
+                        ProtocolsEnabled  = @(
+                            [SChannelSslProtocols]::Tls12
+                            [SChannelSslProtocols]::Tls13
+                        )
+                        ProtocolsDisabled = @(
+                            [SChannelSslProtocols]::Ssl2
+                            [SChannelSslProtocols]::Ssl3
+                            [SChannelSslProtocols]::Tls
+                        )
+                        ProtocolsDefault  = @()
+                    }
+
+                    $script:mockInstance.PropertiesNotInDesiredState = @(
+                        @{
+                            Property      = 'ProtocolsEnabled'
+                            ExpectedValue = @(
+                                [SChannelSslProtocols]::DTls12
+                                [SChannelSslProtocols]::Tls12
+                                [SChannelSslProtocols]::Tls13
+                            )
+                            ActualValue   = $propertiesToModify.ProtocolsEnabled
+                        }
+                        @{
+                            Property      = 'ProtocolsDisabled'
+                            ExpectedValue = @(
+                                [SChannelSslProtocols]::Ssl2
+                                [SChannelSslProtocols]::Ssl3
+                                [SChannelSslProtocols]::Dtls1
+                                [SChannelSslProtocols]::Tls
+                            )
+                            ActualValue   = $propertiesToModify.ProtocolsDisabled
+                        }
+                        @{
+                            Property      = 'ProtocolsDefault'
+                            ExpectedValue = @(
+                                [SChannelSslProtocols]::Tls11
+
+                            )
+                            ActualValue   = $propertiesToModify.ProtocolsDefault
+                        }
+                    )
+
+                    $null = $script:mockInstance.Modify($propertiesToModify)
+                }
+
+                Should -Invoke -CommandName Enable-TlsProtocol -ParameterFilter {
+                    $Client -eq $false -and
+                    $Protocol -eq 'DTls12'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Disable-TlsProtocol -ParameterFilter {
+                    $Client -eq $false -and
+                    $Protocol -contains @(
+                        'Tls'
+                    )
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Reset-TlsProtocol -ParameterFilter {
+                    $Client -eq $false -and
+                    $Protocol -eq 'DTls1'
+                } -Exactly -Times 1 -Scope It
+
+                Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
+            }
+        }
+    }
+}
