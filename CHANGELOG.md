@@ -17,6 +17,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Test-TlsProtocol
 - Enum
   - SChannelSslProtocols
+- BREAKING: Converted Protocol to class-based resource [#50](https://github.com/dsccommunity/SChannelDsc/issues/50).
+  - This now consists of two resources, one for Client side TLS settings and the other for Server side settings.
+  - Add DTLS support [#37](https://github.com/dsccommunity/SChannelDsc/issues/37).
 
 ### Changed
 
@@ -36,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Convert-SCDscCIMInstanceToString
   - Convert-SCDscHashtableToString
   - Test-SCDscObjectHasProperty
+- Protocol Resource - Replaced by class resources
 
 ## [1.5.0] - 2026-01-27
 
