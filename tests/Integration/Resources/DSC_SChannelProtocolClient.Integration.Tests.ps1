@@ -70,7 +70,7 @@ Describe "$($script:dscResourceName)_Integration" {
 
         It 'Should compile and apply the MOF without throwing' {
             $configurationParameters = @{
-                OutputPath        = $TestDrive
+                OutputPath        = ('{0}\{1}' -f $TestDrive, $configurationName)
                 # The variable $ConfigurationData was dot-sourced above.
                 ConfigurationData = $ConfigurationData
             }
@@ -78,7 +78,7 @@ Describe "$($script:dscResourceName)_Integration" {
             $null = & $configurationName @configurationParameters
 
             $startDscConfigurationParameters = @{
-                Path         = $TestDrive
+                Path         = ('{0}\{1}' -f $TestDrive, $configurationName)
                 ComputerName = 'localhost'
                 Wait         = $true
                 Verbose      = $true
