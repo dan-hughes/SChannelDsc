@@ -169,7 +169,7 @@ stages:
 
   - stage: Integration_Test
     displayName: 'Integration Test'
-    dependsOn: Quality_Test_and_Unit_Test
+    dependsOn: Build
     jobs:
       - job: Test_Integration
         displayName: 'Integration'
