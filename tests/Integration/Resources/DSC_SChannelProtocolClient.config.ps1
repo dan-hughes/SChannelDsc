@@ -58,7 +58,7 @@ Configuration DSC_SChannelProtocolClient_ResetToDefault
         SChannelProtocolClient 'Integration_Test'
         {
             IsSingleInstance   = 'Yes'
-            ProtocolsDefault   = @('Tls11', 'Tls12', 'Tls13')
+            ProtocolsDefault   = 'Tls11', 'Tls12', 'Tls13'
             RebootWhenRequired = $Node.RebootWhenRequired
         }
     }
