@@ -25,7 +25,6 @@
 function Get-EnumFlags
 {
     [CmdletBinding()]
-    [OutputType([System.Object[]])]
     param(
         [Parameter(Mandatory = $true, ValueFromPipeline = $true, Position = 0)]
         [System.Enum]
