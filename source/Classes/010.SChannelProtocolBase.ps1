@@ -52,15 +52,15 @@ class SChannelProtocolBase : ResourceBase
 
         $currentState.ProtocolsEnabled = @($getCurrentStateResult.Where({
                     $_.Enabled -eq 1
-                }).Protocol | Get-EnumFlags)
+                }).Protocol)
 
         $currentState.ProtocolsDisabled = @($getCurrentStateResult.Where({
                     $_.Enabled -eq 0
-                }).Protocol | Get-EnumFlags)
+                }).Protocol)
 
         $currentState.ProtocolsDefault = @($getCurrentStateResult.Where({
                     $null -eq $_.Enabled
-                }).Protocol | Get-EnumFlags)
+                }).Protocol)
 
         return $currentState
     }
