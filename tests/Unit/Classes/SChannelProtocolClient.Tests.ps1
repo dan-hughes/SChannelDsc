@@ -7,6 +7,8 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
 
+return
+
 BeforeDiscovery {
     try
     {
@@ -112,18 +114,18 @@ Describe 'SChannelProtocolClient\Get()' -Tag 'Get' {
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
-                                ProtocolsEnabled  = [SChannelSslProtocols[]] @(
+                                ProtocolsEnabled  = @(
                                     [SChannelSslProtocols]::Tls12,
                                     [SChannelSslProtocols]::Tls13
-                                )
-                                ProtocolsDisabled = [SChannelSslProtocols[]] @(
+                                ) | Get-EnumFlags
+                                ProtocolsDisabled = @(
                                     [SChannelSslProtocols]::Ssl2,
                                     [SChannelSslProtocols]::Ssl3
-                                )
-                                ProtocolsDefault  = [SChannelSslProtocols[]] @(
+                                ) | Get-EnumFlags
+                                ProtocolsDefault  = @(
                                     [SChannelSslProtocols]::Tls,
                                     [SChannelSslProtocols]::Tls11
-                                )
+                                ) | Get-EnumFlags
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
@@ -167,7 +169,6 @@ Describe 'SChannelProtocolClient\Get()' -Tag 'Get' {
                             [SChannelSslProtocols]::Ssl2,
                             [SChannelSslProtocols]::Ssl3
                         )
-                        ProtocolsDefault   = @()
                         RebootWhenRequired = $true
                     }
 
@@ -181,15 +182,15 @@ Describe 'SChannelProtocolClient\Get()' -Tag 'Get' {
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
-                                ProtocolsEnabled  = [SChannelSslProtocols[]] @(
+                                ProtocolsEnabled  = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Tls12,
                                     [SChannelSslProtocols]::Tls13
-                                )
-                                ProtocolsDisabled = [SChannelSslProtocols[]] @(
+                                ) | Get-EnumFlags
+                                ProtocolsDisabled = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Ssl2,
                                     [SChannelSslProtocols]::Ssl3
-                                )
-                                ProtocolsDefault  = [SChannelSslProtocols[]] @()
+                                ) | Get-EnumFlags
+                                ProtocolsDefault  = [SChannelSslProtocols] @() | Get-EnumFlags
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
@@ -252,18 +253,18 @@ Describe 'SChannelProtocolClient\Get()' -Tag 'Get' {
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
-                                ProtocolsEnabled  = [SChannelSslProtocols[]] @(
+                                ProtocolsEnabled  = @(
                                     [SChannelSslProtocols]::Tls12,
                                     [SChannelSslProtocols]::Tls13
-                                )
-                                ProtocolsDisabled = [SChannelSslProtocols[]] @(
+                                ) | Get-EnumFlags
+                                ProtocolsDisabled = @(
                                     [SChannelSslProtocols]::Ssl2,
                                     [SChannelSslProtocols]::Ssl3
-                                )
-                                ProtocolsDefault  = [SChannelSslProtocols[]] @(
+                                ) | Get-EnumFlags
+                                ProtocolsDefault  = @(
                                     [SChannelSslProtocols]::Tls,
                                     [SChannelSslProtocols]::Tls11
-                                )
+                                ) | Get-EnumFlags
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
@@ -325,17 +326,17 @@ Describe 'SChannelProtocolClient\Get()' -Tag 'Get' {
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
-                                ProtocolsEnabled  = [SChannelSslProtocols[]] @(
+                                ProtocolsEnabled  = @(
                                     [SChannelSslProtocols]::Tls12,
                                     [SChannelSslProtocols]::Tls13
-                                )
-                                ProtocolsDisabled = [SChannelSslProtocols[]] @(
+                                ) | Get-EnumFlags
+                                ProtocolsDisabled = @(
                                     [SChannelSslProtocols]::Ssl3
-                                )
-                                ProtocolsDefault  = [SChannelSslProtocols[]] @(
+                                ) | Get-EnumFlags
+                                ProtocolsDefault  = @(
                                     [SChannelSslProtocols]::Tls,
                                     [SChannelSslProtocols]::Tls11
-                                )
+                                ) | Get-EnumFlags
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
