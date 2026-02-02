@@ -75,8 +75,8 @@ class SChannelProtocolBase : ResourceBase
 
         if ($properties.ContainsKey('ProtocolsEnabled'))
         {
-            $protocolsToEnable = $this.PropertiesNotInDesiredState | Where-Object { $_.Property -eq 'ProtocolsEnabled' }
-            $protocolsToUpdate = $protocolsToEnable.ExpectedValue | Where-Object { $_ -notin $protocolsToEnable.ActualValue }
+            $protocolsToEnable = $this.PropertiesNotInDesiredState.Where({ $_.Property -eq 'ProtocolsEnabled' })
+            $protocolsToUpdate = $protocolsToEnable.ExpectedValue.Where({ $_ -notin $protocolsToEnable.ActualValue })
             if ($protocolsToUpdate.Count -gt 0)
             {
                 Enable-TlsProtocol -Protocol $protocolsToUpdate -Client:$this.ClientSide
@@ -86,8 +86,8 @@ class SChannelProtocolBase : ResourceBase
 
         if ($properties.ContainsKey('ProtocolsDisabled'))
         {
-            $protocolsToDisable = $this.PropertiesNotInDesiredState | Where-Object { $_.Property -eq 'ProtocolsDisabled' }
-            $protocolsToUpdate = $protocolsToDisable.ExpectedValue | Where-Object { $_ -notin $protocolsToDisable.ActualValue }
+            $protocolsToDisable = $this.PropertiesNotInDesiredState.Where({ $_.Property -eq 'ProtocolsDisabled' })
+            $protocolsToUpdate = $protocolsToDisable.ExpectedValue.Where({ $_ -notin $protocolsToDisable.ActualValue })
             if ($protocolsToUpdate.Count -gt 0)
             {
                 Disable-TlsProtocol -Protocol $protocolsToUpdate -Client:$this.ClientSide
@@ -97,8 +97,8 @@ class SChannelProtocolBase : ResourceBase
 
         if ($properties.ContainsKey('ProtocolsDefault'))
         {
-            $protocolsToDefault = $this.PropertiesNotInDesiredState | Where-Object { $_.Property -eq 'ProtocolsDefault' }
-            $protocolsToUpdate = $protocolsToDefault.ExpectedValue | Where-Object { $_ -notin $protocolsToDefault.ActualValue }
+            $protocolsToDefault = $this.PropertiesNotInDesiredState.Where({ $_.Property -eq 'ProtocolsDefault' })
+            $protocolsToUpdate = $protocolsToDefault.ExpectedValue.Where({ $_ -notin $protocolsToDefault.ActualValue })
             if ($protocolsToUpdate.Count -gt 0)
             {
                 Reset-TlsProtocol -Protocol $protocolsToUpdate -Client:$this.ClientSide
