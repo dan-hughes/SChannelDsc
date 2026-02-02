@@ -288,10 +288,10 @@ Describe 'SChannelProtocolClient\Get()' -Tag 'Get' {
                     $currentState.ProtocolsDefault | Should -HaveCount 2
 
                     $currentState.Reasons | Should -HaveCount 2
-                    $currentState.Reasons[0].Code | Should -Be 'SChannelProtocolClient:SChannelProtocolClient:ProtocolsDefault'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property ProtocolsDefault should be [3,4,5], but was [3,4]'
-                    $currentState.Reasons[1].Code | Should -Be 'SChannelProtocolClient:SChannelProtocolClient:ProtocolsEnabled'
-                    $currentState.Reasons[1].Phrase | Should -Be 'The property ProtocolsEnabled should be 6, but was [5,6]'
+                    $currentState.Reasons.Code | Should -Contain 'SChannelProtocolClient:SChannelProtocolClient:ProtocolsDefault'
+                    $currentState.Reasons.Phrase | Should -Contain 'The property ProtocolsDefault should be [3,4,5], but was [3,4]'
+                    $currentState.Reasons.Code | Should -Contain 'SChannelProtocolClient:SChannelProtocolClient:ProtocolsEnabled'
+                    $currentState.Reasons.Phrase | Should -Contain 'The property ProtocolsEnabled should be 6, but was [5,6]'
                 }
             }
         }
@@ -360,8 +360,8 @@ Describe 'SChannelProtocolClient\Get()' -Tag 'Get' {
                     $currentState.ProtocolsDefault | Should -HaveCount 2
 
                     $currentState.Reasons | Should -HaveCount 1
-                    $currentState.Reasons[0].Code | Should -Be 'SChannelProtocolClient:SChannelProtocolClient:ProtocolsDisabled'
-                    $currentState.Reasons[0].Phrase | Should -Be 'The property ProtocolsDisabled should be , but was 2'
+                    $currentState.Reasons.Code | Should -Contain 'SChannelProtocolClient:SChannelProtocolClient:ProtocolsDisabled'
+                    $currentState.Reasons.Phrase | Should -Contain 'The property ProtocolsDisabled should be , but was 2'
                 }
             }
         }
