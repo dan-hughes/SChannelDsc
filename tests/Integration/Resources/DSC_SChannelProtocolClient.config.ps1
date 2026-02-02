@@ -13,9 +13,16 @@ else
         AllNodes = @(
             @{
                 NodeName           = 'localhost'
-                ProtocolsEnabled   = 'Tls12', 'Tls13'
-                ProtocolsDisabled  = 'Tls11'
-                ProtocolsDefault   = 'Tls11', 'Tls12', 'Tls13'
+                ProtocolsEnabled   = @(
+                    [SChannelSslProtocols]::Tls12
+                    [SChannelSslProtocols]::Tls13
+                )
+                ProtocolsDisabled  = [SChannelSslProtocols]::Tls11
+                ProtocolsDefault   = @(
+                    [SChannelSslProtocols]::Tls11
+                    [SChannelSslProtocols]::Tls12
+                    [SChannelSslProtocols]::Tls13
+                )
                 RebootWhenRequired = $false
             }
         )
