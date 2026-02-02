@@ -1,4 +1,5 @@
 $configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
+Import-Module -Name SChannelDsc
 if (Test-Path -Path $configFile)
 {
     <#
