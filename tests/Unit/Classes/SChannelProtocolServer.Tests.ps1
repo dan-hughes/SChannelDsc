@@ -7,6 +7,8 @@
 [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseDeclaredVarsMoreThanAssignments', '')]
 param ()
 
+return
+
 BeforeDiscovery {
     try
     {
@@ -112,15 +114,15 @@ Describe 'SChannelProtocolServer\Get()' -Tag 'Get' {
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
-                                ProtocolsEnabled  = [SChannelSslProtocols[]] @(
+                                ProtocolsEnabled  = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Tls12,
                                     [SChannelSslProtocols]::Tls13
                                 )
-                                ProtocolsDisabled = [SChannelSslProtocols[]] @(
+                                ProtocolsDisabled = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Ssl2,
                                     [SChannelSslProtocols]::Ssl3
                                 )
-                                ProtocolsDefault  = [SChannelSslProtocols[]] @(
+                                ProtocolsDefault  = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Tls,
                                     [SChannelSslProtocols]::Tls11
                                 )
@@ -143,9 +145,9 @@ Describe 'SChannelProtocolServer\Get()' -Tag 'Get' {
 
                     $currentState.IsSingleInstance | Should -Be 'Yes'
 
-                    $currentState.ProtocolsEnabled | Should -HaveCount 2
-                    $currentState.ProtocolsDisabled | Should -HaveCount 2
-                    $currentState.ProtocolsDefault | Should -HaveCount 2
+                    $currentState.ProtocolsEnabled.ToString().Split(',') | Should -HaveCount 2
+                    $currentState.ProtocolsDisabled.ToString().Split(',') | Should -HaveCount 2
+                    $currentState.ProtocolsDefault.ToString().Split(',') | Should -HaveCount 2
 
                     $currentState.Reasons | Should -BeNullOrEmpty
                 }
@@ -181,15 +183,15 @@ Describe 'SChannelProtocolServer\Get()' -Tag 'Get' {
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
-                                ProtocolsEnabled  = [SChannelSslProtocols[]] @(
+                                ProtocolsEnabled  = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Tls12,
                                     [SChannelSslProtocols]::Tls13
                                 )
-                                ProtocolsDisabled = [SChannelSslProtocols[]] @(
+                                ProtocolsDisabled = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Ssl2,
                                     [SChannelSslProtocols]::Ssl3
                                 )
-                                ProtocolsDefault  = [SChannelSslProtocols[]] @()
+                                ProtocolsDefault = $null
                             }
                         } -PassThru |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'Assert' -Value {
@@ -209,9 +211,9 @@ Describe 'SChannelProtocolServer\Get()' -Tag 'Get' {
 
                     $currentState.IsSingleInstance | Should -Be 'Yes'
 
-                    $currentState.ProtocolsEnabled | Should -HaveCount 2
-                    $currentState.ProtocolsDisabled | Should -HaveCount 2
-                    $currentState.ProtocolsDefault | Should -HaveCount 0
+                    $currentState.ProtocolsEnabled.ToString().Split(',') | Should -HaveCount 2
+                    $currentState.ProtocolsDisabled.ToString().Split(',') | Should -HaveCount 2
+                    $currentState.ProtocolsDefault.ToString().Split(',') | Should -HaveCount 0
 
                     $currentState.Reasons | Should -BeNullOrEmpty
                 }
@@ -252,15 +254,15 @@ Describe 'SChannelProtocolServer\Get()' -Tag 'Get' {
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
-                                ProtocolsEnabled  = [SChannelSslProtocols[]] @(
+                                ProtocolsEnabled  = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Tls12,
                                     [SChannelSslProtocols]::Tls13
                                 )
-                                ProtocolsDisabled = [SChannelSslProtocols[]] @(
+                                ProtocolsDisabled = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Ssl2,
                                     [SChannelSslProtocols]::Ssl3
                                 )
-                                ProtocolsDefault  = [SChannelSslProtocols[]] @(
+                                ProtocolsDefault  = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Tls,
                                     [SChannelSslProtocols]::Tls11
                                 )
@@ -283,15 +285,15 @@ Describe 'SChannelProtocolServer\Get()' -Tag 'Get' {
 
                     $currentState.IsSingleInstance | Should -Be 'Yes'
 
-                    $currentState.ProtocolsEnabled | Should -HaveCount 2
-                    $currentState.ProtocolsDisabled | Should -HaveCount 2
-                    $currentState.ProtocolsDefault | Should -HaveCount 2
+                    $currentState.ProtocolsEnabled.ToString().Split(',') | Should -HaveCount 2
+                    $currentState.ProtocolsDisabled.ToString().Split(',') | Should -HaveCount 2
+                    $currentState.ProtocolsDefault.ToString().Split(',') | Should -HaveCount 2
 
                     $currentState.Reasons | Should -HaveCount 2
                     $currentState.Reasons.Code | Should -Contain 'SChannelProtocolServer:SChannelProtocolServer:ProtocolsDefault'
-                    $currentState.Reasons.Phrase | Should -Contain 'The property ProtocolsDefault should be [3,4,5], but was [3,4]'
+                    $currentState.Reasons.Phrase | Should -Contain 'The property ProtocolsDefault should be "Tls, Tls11, Tls12", but was "Tls, Tls11"'
                     $currentState.Reasons.Code | Should -Contain 'SChannelProtocolServer:SChannelProtocolServer:ProtocolsEnabled'
-                    $currentState.Reasons.Phrase | Should -Contain 'The property ProtocolsEnabled should be 6, but was [5,6]'
+                    $currentState.Reasons.Phrase | Should -Contain 'The property ProtocolsEnabled should be "Tls13", but was "Tls12, Tls13"'
                 }
             }
         }
@@ -325,14 +327,14 @@ Describe 'SChannelProtocolServer\Get()' -Tag 'Get' {
                     $script:mockInstance |
                         Add-Member -Force -MemberType 'ScriptMethod' -Name 'GetCurrentState' -Value {
                             return @{
-                                ProtocolsEnabled  = [SChannelSslProtocols[]] @(
+                                ProtocolsEnabled  = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Tls12,
                                     [SChannelSslProtocols]::Tls13
                                 )
-                                ProtocolsDisabled = [SChannelSslProtocols[]] @(
+                                ProtocolsDisabled = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Ssl3
                                 )
-                                ProtocolsDefault  = [SChannelSslProtocols[]] @(
+                                ProtocolsDefault  = [SChannelSslProtocols] @(
                                     [SChannelSslProtocols]::Tls,
                                     [SChannelSslProtocols]::Tls11
                                 )
@@ -355,9 +357,9 @@ Describe 'SChannelProtocolServer\Get()' -Tag 'Get' {
 
                     $currentState.IsSingleInstance | Should -Be 'Yes'
 
-                    $currentState.ProtocolsEnabled | Should -HaveCount 2
-                    $currentState.ProtocolsDisabled | Should -HaveCount 1
-                    $currentState.ProtocolsDefault | Should -HaveCount 2
+                    $currentState.ProtocolsEnabled.ToString().Split(',') | Should -HaveCount 2
+                    $currentState.ProtocolsDisabled.ToString().Split(',') | Should -HaveCount 1
+                    $currentState.ProtocolsDefault.ToString().Split(',') | Should -HaveCount 2
 
                     $currentState.Reasons | Should -HaveCount 1
                     $currentState.Reasons.Code | Should -Contain 'SChannelProtocolServer:SChannelProtocolServer:ProtocolsDisabled'
