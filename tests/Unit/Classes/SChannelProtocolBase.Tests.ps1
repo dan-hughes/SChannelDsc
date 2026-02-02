@@ -334,6 +334,7 @@ Describe 'SChannelProtocolBase\Modify()' -Tag 'HiddenMember' {
                         }
                     )
 
+                    # HT with expected values
                     $null = $script:mockInstance.Modify($propertiesToModify)
                 }
 
@@ -345,13 +346,13 @@ Describe 'SChannelProtocolBase\Modify()' -Tag 'HiddenMember' {
                 Should -Invoke -CommandName Disable-TlsProtocol -ParameterFilter {
                     $Client -eq $false -and
                     $Protocol -contains @(
-                        'Tls'
+                        'DTls1'
                     )
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Reset-TlsProtocol -ParameterFilter {
                     $Client -eq $false -and
-                    $Protocol -eq 'DTls1'
+                    $Protocol -eq 'Tls11'
                 } -Exactly -Times 1 -Scope It
 
                 Should -Invoke -CommandName Set-DscMachineRebootRequired -Exactly -Times 1 -Scope It
