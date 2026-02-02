@@ -1,5 +1,6 @@
-$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
 Import-Module -Name SChannelDsc
+
+$configFile = [System.IO.Path]::ChangeExtension($MyInvocation.MyCommand.Path, 'json')
 if (Test-Path -Path $configFile)
 {
     <#
@@ -30,8 +31,8 @@ Configuration DSC_SChannelProtocolClient_EnableTls12And13
         {
             IsSingleInstance   = 'Yes'
             ProtocolsEnabled   = @(
-                [SChannelSslProtocols]::Tls12
-                [SChannelSslProtocols]::Tls13
+                'Tls12'
+                'Tls13'
             )
             RebootWhenRequired = $Node.RebootWhenRequired
         }
@@ -47,7 +48,7 @@ Configuration DSC_SChannelProtocolClient_DisableTls11
         SChannelProtocolClient 'Integration_Test'
         {
             IsSingleInstance   = 'Yes'
-            ProtocolsDisabled  = [SChannelSslProtocols]::Tls11
+            ProtocolsDisabled  = 'Tls11'
             RebootWhenRequired = $Node.RebootWhenRequired
         }
     }
@@ -63,9 +64,9 @@ Configuration DSC_SChannelProtocolClient_ResetToDefault
         {
             IsSingleInstance   = 'Yes'
             ProtocolsDefault   = @(
-                [SChannelSslProtocols]::Tls11
-                [SChannelSslProtocols]::Tls12
-                [SChannelSslProtocols]::Tls13
+                'Tls11'
+                'Tls12'
+                'Tls13'
             )
             RebootWhenRequired = $Node.RebootWhenRequired
         }
