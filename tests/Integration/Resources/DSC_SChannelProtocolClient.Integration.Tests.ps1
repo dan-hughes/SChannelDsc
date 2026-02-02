@@ -107,7 +107,7 @@ Describe "$($script:dscResourceName)_Integration" {
         }
 
         It 'Should return $true when Test-DscConfiguration is run' {
-            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -Be 'True'
+            Test-DscConfiguration -Verbose -ErrorAction 'Stop' | Should -BeTrue
         }
     }
 }
