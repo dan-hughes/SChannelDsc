@@ -14,14 +14,14 @@ else
             @{
                 NodeName           = 'localhost'
                 ProtocolsEnabled   = @(
-                    Tls12
-                    Tls13
+                    'Tls12'
+                    'Tls13'
                 )
-                ProtocolsDisabled  = Tls11
+                ProtocolsDisabled  = 'Tls11'
                 ProtocolsDefault   = @(
-                    Tls11
-                    Tls12
-                    Tls13
+                    'Tls11'
+                    'Tls12'
+                    'Tls13'
                 )
                 RebootWhenRequired = $false
             }
