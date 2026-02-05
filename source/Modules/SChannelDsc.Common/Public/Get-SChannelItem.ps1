@@ -32,6 +32,10 @@ function Get-SChannelItem
         {
             return 'Disabled'
         }
+        4294967295
+        {
+            return 'Enabled'
+        }
         1
         {
             return 'Enabled'
