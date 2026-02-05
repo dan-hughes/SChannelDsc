@@ -165,7 +165,7 @@ Describe 'SChannelProtocolBase\GetCurrentState()' -Tag 'HiddenMember' {
         }
     }
 
-    Context 'When $Client is $true' {
+    Context 'When $ClientSide is $true' {
         Context 'When object is present in the current state' {
             BeforeAll {
                 InModuleScope -ScriptBlock {
