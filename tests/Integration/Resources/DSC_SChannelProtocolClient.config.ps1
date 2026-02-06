@@ -28,7 +28,10 @@ Configuration DSC_SChannelProtocolClient_EnableTls12And13
         SChannelProtocolClient 'Integration_Test'
         {
             IsSingleInstance   = 'Yes'
-            ProtocolsEnabled   = 'Tls12', 'Tls13'
+            ProtocolsEnabled   = @(
+                'Tls12'
+                'Tls13'
+            )
             RebootWhenRequired = $Node.RebootWhenRequired
         }
     }
