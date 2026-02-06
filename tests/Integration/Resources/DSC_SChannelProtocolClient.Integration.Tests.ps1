@@ -55,13 +55,32 @@ Describe "$($script:dscResourceName)_Integration" {
         $resourceId = "[$($script:dscResourceFriendlyName)]Integration_Test"
     }
 
-    Context ('When using configuration <_>') -ForEach @(
-        "$($script:dscResourceName)_EnableTls12And13"
-        "$($script:dscResourceName)_DisableTls11"
-        "$($script:dscResourceName)_ResetToDefault"
-    ) {
+    BeforeDiscovery {
+        @(
+            @{
+                Name   = "$($script:dscResourceName)_EnableTls12And13"
+                Should = {
+                    $resourceCurrentState.ProtocolsEnabled | Should -Be $ConfigurationData.AllNodes.ProtocolsEnabled
+                }
+            }
+            @{
+                Name   = "$($script:dscResourceName)_DisableTls11"
+                Should = {
+                    $resourceCurrentState.ProtocolsDisabled | Should -Be $ConfigurationData.AllNodes.ProtocolsDisabled
+                }
+            }
+            @{
+                Name   = "$($script:dscResourceName)_ResetToDefault"
+                Should = {
+                    $resourceCurrentState.ProtocolsDefault  | Should -Be $ConfigurationData.AllNodes.ProtocolsDefault
+                }
+            }
+        )
+    }
+
+    Context ('When using configuration <Name>') -ForEach $testCases {
         BeforeAll {
-            $configurationName = $_
+            $configurationName = $Name
         }
 
         AfterEach {
@@ -100,9 +119,7 @@ Describe "$($script:dscResourceName)_Integration" {
             }
 
             $resourceCurrentState.IsSingleInstance | Should -Be 'Yes'
-            $resourceCurrentState.ProtocolsEnabled | Should -Be $ConfigurationData.AllNodes.ProtocolsEnabled
-            $resourceCurrentState.ProtocolsDisabled | Should -Be $ConfigurationData.AllNodes.ProtocolsDisabled
-            $resourceCurrentState.ProtocolsDefault  | Should -Be $ConfigurationData.AllNodes.ProtocolsDefault
+            $Should
             $resourceCurrentState.RebootWhenRequired | Should -BeFalse
         }
 
