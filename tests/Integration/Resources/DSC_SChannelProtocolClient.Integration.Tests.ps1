@@ -56,7 +56,7 @@ Describe "$($script:dscResourceName)_Integration" {
     }
 
     BeforeDiscovery {
-        @(
+        $testCases = @(
             @{
                 Name   = "$($script:dscResourceName)_EnableTls12And13"
                 Should = {
